@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -9,6 +10,20 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
+  dynamic _image;
+  pickImage() async {
+    var result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+    );
+
+    if (result != null) {
+      setState(() {
+        _image = result.files.first.bytes;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -39,8 +54,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: const Center(
-                child: Text("Category image"),
+              child: Center(
+                child: _image != null
+                    ? Image.memory(_image)
+                    : const Text("Category image"),
               ),
             ),
             Padding(
@@ -75,7 +92,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              pickImage();
+            },
             child: const Text("Pick image"),
           ),
         ),
