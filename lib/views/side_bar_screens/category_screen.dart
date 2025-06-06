@@ -12,8 +12,11 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late String categoryName;
+
   dynamic _image;
-  pickImage() async {
+  dynamic _bannerImage;
+
+  void pickImage() async {
     var result = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowMultiple: false,
@@ -22,6 +25,19 @@ class _CategoryScreenState extends State<CategoryScreen> {
     if (result != null) {
       setState(() {
         _image = result.files.first.bytes;
+      });
+    }
+  }
+
+  void pickBannerImage() async {
+    var result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+    );
+
+    if (result != null) {
+      setState(() {
+        _bannerImage = result.files.first.bytes;
       });
     }
   }
@@ -109,15 +125,39 @@ class _CategoryScreenState extends State<CategoryScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              onPressed: () {
-                pickImage();
-              },
+              onPressed: pickImage,
               child: const Text("Pick image"),
             ),
           ),
           const Divider(
             color: Colors.grey,
           ),
+          Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Center(
+              child: _bannerImage != null
+                  ? Image.memory(_bannerImage)
+                  : const Text(
+                      "Category Banner",
+                      style: TextStyle(color: Colors.white),
+                    ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: pickBannerImage,
+              child: const Text("Pick Image"),
+            ),
+          ),
+          const Divider(
+            color: Colors.grey,
+          )
         ],
       ),
     );
