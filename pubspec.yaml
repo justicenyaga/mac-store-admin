@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_admin_scaffold: ^1.4.0
   file_picker: ^8.0.5
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
