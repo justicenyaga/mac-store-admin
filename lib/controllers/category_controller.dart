@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_web/global_variables.dart';
 import 'package:app_web/models/category.dart';
 import 'package:app_web/services/manage_http_response.dart';
@@ -56,6 +58,25 @@ class CategoryController {
       );
     } catch (e) {
       print("Error uploading to cloudinary: $e");
+    }
+  }
+
+  Future<List<Category>> loadCategories() async {
+    try {
+      final response =
+          await http.get(Uri.parse("$uri/api/categories"), headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+
+        return data.map((category) => Category.fromJson(category)).toList();
+      }
+
+      throw Exception("Failed to load categories");
+    } catch (e) {
+      throw Exception("Error loading categories $e");
     }
   }
 }
