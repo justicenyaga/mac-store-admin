@@ -36,19 +36,23 @@ class _BannerWidgetState extends State<BannerWidget> {
           );
         } else {
           final banners = snapshot.data!;
-          return SizedBox(
-            height: 400,
-            child: ListView.builder(
-              itemCount: banners.length,
-              itemBuilder: (context, index) {
-                final banner = banners[index];
-                return Image.network(
-                  banner.image,
-                  width: 40,
-                  height: 40,
-                );
-              },
+          return GridView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: banners.length,
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 6,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
             ),
+            itemBuilder: (context, index) {
+              final banner = banners[index];
+              return Image.network(
+                banner.image,
+                height: 100,
+                width: 100,
+              );
+            },
           );
         }
       },
