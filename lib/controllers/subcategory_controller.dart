@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_web/global_variables.dart';
 import 'package:app_web/models/subcategory.dart';
 import 'package:app_web/services/manage_http_response.dart';
@@ -49,6 +51,27 @@ class SubcategoryController {
           });
     } catch (e) {
       print("Error: $e");
+    }
+  }
+
+  Future<List<Subcategory>> loadSubcategories() async {
+    try {
+      final response =
+          await http.get(Uri.parse("$uri/api/subcategories"), headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+
+        return data
+            .map((subcategory) => Subcategory.fromJson(subcategory))
+            .toList();
+      }
+
+      throw Exception("Failed to load subcategories");
+    } catch (e) {
+      throw Exception("Error loading subcategories $e");
     }
   }
 }

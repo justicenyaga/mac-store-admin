@@ -1,6 +1,7 @@
 import 'package:app_web/controllers/category_controller.dart';
 import 'package:app_web/controllers/subcategory_controller.dart';
 import 'package:app_web/models/category.dart';
+import 'package:app_web/views/side_bar_screens/widgets/subcategory_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -43,136 +44,140 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              "Subcategories",
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(4),
-            child: Divider(
-              color: Colors.grey,
-            ),
-          ),
-          FutureBuilder(
-            future: _futureCategories,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text("Error: ${snapshot.error}"),
-                );
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(
-                  child: Text("No categories"),
-                );
-              } else {
-                return DropdownButton<Category>(
-                  value: _selectedCategory,
-                  hint: const Text("Select Category"),
-                  items: snapshot.data!
-                      .map(
-                        (category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category.name),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedCategory = value;
-                    });
-                    print(_selectedCategory!.name);
-                  },
-                );
-              }
-            },
-          ),
-          Row(
-            children: [
-              Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Center(
-                  child: _image != null
-                      ? Image.memory(_image)
-                      : const Text("Subcategory image"),
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                "Subcategories",
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: 200,
-                  child: TextFormField(
+            ),
+            const Padding(
+              padding: EdgeInsets.all(4),
+              child: Divider(
+                color: Colors.grey,
+              ),
+            ),
+            FutureBuilder(
+              future: _futureCategories,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error: ${snapshot.error}"),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text("No categories"),
+                  );
+                } else {
+                  return DropdownButton<Category>(
+                    value: _selectedCategory,
+                    hint: const Text("Select Category"),
+                    items: snapshot.data!
+                        .map(
+                          (category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(category.name),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (value) {
-                      name = value;
+                      setState(() {
+                        _selectedCategory = value;
+                      });
+                      print(_selectedCategory!.name);
                     },
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Please enter subcategory name";
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(
-                      labelText: "Enter Subcategory Name",
+                  );
+                }
+              },
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Center(
+                    child: _image != null
+                        ? Image.memory(_image)
+                        : const Text("Subcategory image"),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 200,
+                    child: TextFormField(
+                      onChanged: (value) {
+                        name = value;
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Please enter subcategory name";
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        labelText: "Enter Subcategory Name",
+                      ),
                     ),
                   ),
                 ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                ),
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await _subCategoryController.uploadSubcategory(
-                      categoryId: _selectedCategory!.id,
-                      categoryName: _selectedCategory!.name,
-                      subCategoryName: name,
-                      pickedImage: _image,
-                      context: context,
-                    );
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                  ),
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await _subCategoryController.uploadSubcategory(
+                        categoryId: _selectedCategory!.id,
+                        categoryName: _selectedCategory!.name,
+                        subCategoryName: name,
+                        pickedImage: _image,
+                        context: context,
+                      );
 
-                    setState(() {
-                      _formKey.currentState!.reset();
-                      _image = null;
-                    });
-                  }
-                },
-                child: const Text(
-                  "Save",
-                  style: TextStyle(
-                    color: Colors.white,
+                      setState(() {
+                        _formKey.currentState!.reset();
+                        _image = null;
+                      });
+                    }
+                  },
+                  child: const Text(
+                    "Save",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: _pickImage,
-              child: const Text("Pick image"),
+              ],
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: _pickImage,
+                child: const Text("Pick image"),
+              ),
+            ),
+            const Divider(color: Colors.grey),
+            const SubcategoryWidget(),
+          ],
+        ),
       ),
     );
   }
