@@ -1,4 +1,5 @@
 import 'package:app_web/controllers/category_controller.dart';
+import 'package:app_web/controllers/subcategory_controller.dart';
 import 'package:app_web/models/category.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class SubcategoryScreen extends StatefulWidget {
 }
 
 class _SubcategoryScreenState extends State<SubcategoryScreen> {
+  final _subCategoryController = SubcategoryController();
   late Future<List<Category>> _futureCategories;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -138,8 +140,21 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                 ),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {}
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    await _subCategoryController.uploadSubcategory(
+                      categoryId: _selectedCategory!.id,
+                      categoryName: _selectedCategory!.name,
+                      subCategoryName: name,
+                      pickedImage: _image,
+                      context: context,
+                    );
+
+                    setState(() {
+                      _formKey.currentState!.reset();
+                      _image = null;
+                    });
+                  }
                 },
                 child: const Text(
                   "Save",
